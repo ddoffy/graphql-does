@@ -1,6 +1,13 @@
 export const resolvers = {
   Query: {
-    greeting: () => "Hello World!",
-    hello: () => "Hello World!",
+    jobs: () => {
+      return [
+        {
+          id: "1",
+          title: "Software Engineer",
+          description: "Awesome job of building software",
+        },
+      ];
+    },
   },
 };
