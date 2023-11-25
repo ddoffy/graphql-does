@@ -3,6 +3,8 @@ import { expressMiddleware as apolloMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import express from "express";
 import { authMiddleware, handleLogin } from "./auth.js";
+import { readFile } from "node:fs/promises";
+import { resolvers } from "./resolvers.js";
 
 const PORT = 9000;
 
@@ -11,24 +13,7 @@ app.use(cors(), express.json(), authMiddleware);
 
 app.post("/login", handleLogin);
 
-const typeDefs = `
-  type User {
-    id: ID!
-    username: String!
-  }
-
-  type Query {
-    me: User
-  }
-`;
-
-const resolvers = {
-  Query: {
-    me: (parent, args, context) => {
-      return context.user;
-    },
-  },
-};
+const typeDefs = await readFile("./schema.graphql", "utf8");
 
 const apolloServer = new ApolloServer({
   typeDefs,
@@ -38,7 +23,7 @@ const apolloServer = new ApolloServer({
 await apolloServer.start();
 
 app.use("/graphql", apolloMiddleware(apolloServer));
-
 app.listen({ port: PORT }, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
 });
