@@ -50,3 +50,8 @@ export async function updateJob({ id, title, description }) {
   await getJobTable().update(updatedFields).where({ id });
   return { ...job, ...updatedFields };
 }
+
+export const companyLoader = new DataLoader(async (ids) => {
+  const companies = await getComanyTable.select().whereIn("id", ids);
+  return ids.map((id) => companies.find((company) => company.id === id));
+});
